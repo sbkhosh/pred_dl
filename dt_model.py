@@ -7,7 +7,7 @@ import numpy as np
 from dt_help import Helper
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.models import Sequential
-from keras.layers import LSTM, Dense, Dropout
+from keras.layers import Bidirectional, Dense, Dropout, LSTM
 
 from numpy.random import seed
 seed(1)
@@ -106,9 +106,9 @@ class DeepModelTS():
         X_train, X_test, Y_train, Y_test = self.create_data_for_NN()
 
         # Defining the model
-        model = Sequential()
-        model.add(LSTM(self.LSTM_layer_depth, activation='relu', input_shape=(self.lag,1), return_sequences=True))
-        model.add(LSTM(self.LSTM_layer_depth//2, activation='relu', return_sequences=False))
+        model = Sequential()   
+        model.add(LSTM(self.LSTM_layer_depth, activation='relu', input_shape=(self.lag,1), return_sequences=False))
+        # model.add(LSTM(self.LSTM_layer_depth//2, activation='relu', return_sequences=True))
         # model.add(LSTM(self.LSTM_layer_depth//4, activation='relu', return_sequences=False))
         # model.add(Dropout(0.1))
         model.add(Dense(1))

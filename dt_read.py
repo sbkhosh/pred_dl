@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import datetime
 import numpy as np
 import os
 import pandas as pd
@@ -7,6 +8,7 @@ import time
 import yaml
 
 from dt_help import Helper
+from pandas.tseries.offsets import BDay
 from yahoofinancials import YahooFinancials
 
 class DataProcessor():
@@ -44,20 +46,25 @@ class DataProcessor():
                 self.description = self.data_tickers['description']
         except:
             raise ValueError("not supported format")
-        
+       
     @Helper.timing
     def process(self):
         start_date = self.conf.get('start_date')
         end_date = self.conf.get('end_date')
+        end_date_future = datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=self.conf.get('n_ahead'))
+        end_date_future = str(end_date_future.date())
+
+        date_range = Helper.get_spec_date(start_date, end_date)
+        date_range_future = Helper.get_spec_date(start_date, end_date_future)
+        diff_len = len(date_range_future) - len(date_range)
         
-        date_range = pd.bdate_range(start=start_date,end=end_date)
-        values = pd.DataFrame({ 'Dates': date_range})
+        values = pd.DataFrame({'Dates': date_range_future})
         values['Dates']= pd.to_datetime(values['Dates'])
         selected_tickers = self.conf.get('tickers_selected')
         
         for i in selected_tickers:
             raw_data = YahooFinancials(i)
-            raw_data = raw_data.get_historical_price_data(start_date, end_date, "daily")
+            raw_data = raw_data.get_historical_price_data(start_date, end_date_future, "daily")
             df = pd.DataFrame(raw_data[i]['prices'])[['formatted_date','adjclose']]
             df.columns = ['Dates1',i]
             df['Dates1']= pd.to_datetime(df['Dates1'])
@@ -69,7 +76,34 @@ class DataProcessor():
         cols = values.columns.drop('Dates')
         values[cols] = values[cols].apply(pd.to_numeric,errors='coerce').round(decimals=3)
         values.set_index('Dates',inplace=True)
-        self.data = values
+        self.data = values[:-diff_len]
+        self.data_future = values[-diff_len:]
+        
+    # @Helper.timing
+    # def process(self):
+    #     start_date = self.conf.get('start_date')
+    #     end_date = self.conf.get('end_date')
+
+    #     date_range = pd.bdate_range(start=start_date,end=end_date)
+    #     values = pd.DataFrame({'Dates': date_range})
+    #     values['Dates']= pd.to_datetime(values['Dates'])
+    #     selected_tickers = self.conf.get('tickers_selected')
+        
+    #     for i in selected_tickers:
+    #         raw_data = YahooFinancials(i)
+    #         raw_data = raw_data.get_historical_price_data(start_date, end_date, "daily")
+    #         df = pd.DataFrame(raw_data[i]['prices'])[['formatted_date','adjclose']]
+    #         df.columns = ['Dates1',i]
+    #         df['Dates1']= pd.to_datetime(df['Dates1'])
+    #         values = values.merge(df,how='left',left_on='Dates',right_on='Dates1')
+    #         values = values.drop(labels='Dates1',axis=1)
+
+    #     values = values.fillna(method="ffill",axis=0)
+    #     values = values.fillna(method="bfill",axis=0)
+    #     cols = values.columns.drop('Dates')
+    #     values[cols] = values[cols].apply(pd.to_numeric,errors='coerce').round(decimals=3)
+    #     values.set_index('Dates',inplace=True)
+    #     self.data = values
         
     def view_data(self):
         print(self.data.head())

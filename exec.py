@@ -40,7 +40,6 @@ if __name__ == '__main__':
 
     yvar = obj_0.conf.get('yvar')
     df = obj_0.data[[yvar]]
-    print(df.shape)
     
     # Initiating the class 
     deep_learner = DeepModelTS(
@@ -129,6 +128,7 @@ if __name__ == '__main__':
     h_fmt = mdates.DateFormatter('%m-%d')
     ax.xaxis.set_major_locator(days)
     ax.xaxis.set_major_formatter(h_fmt)
+    obj_0.data_future.plot(ax=ax,color='r')
     plt.legend()
     plt.grid()
     plt.show()

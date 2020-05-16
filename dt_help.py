@@ -8,6 +8,7 @@ import pandas as pd
 import time
 import yaml
 
+from datetime import date, timedelta
 from functools import wraps
 
 class Helper():
@@ -48,3 +49,19 @@ class Helper():
         with open(filename, 'r') as csvfile:
             dialect = csv.Sniffer().sniff(csvfile.read(1024))
         return(dialect.delimiter)
+        
+    @staticmethod
+    def get_daterange(date1, date2):
+        date1 = pd.to_datetime(date1, format='%Y-%m-%d').date()
+        date2 = pd.to_datetime(date2, format='%Y-%m-%d').date()
+        for n in range(int((date2 - date1).days)+1):
+            yield(date1 + timedelta(n))
+
+    @staticmethod
+    def get_spec_date(date1, date2):
+        weekdays = [1,2,3,4,5,7]
+        dates_all = []
+        for dt in Helper.get_daterange(date1, date2):
+            if dt.isoweekday() in weekdays:
+                dates_all.append(dt.strftime("%Y-%m-%d"))
+        return(dates_all)
