@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 
-import csv
 import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import os
 import pandas as pd 
+import tensorflow as tf
 import warnings
 import yaml
-import tensorflow as tf
 
 from datetime import datetime, timedelta
 from dt_model import DeepModelTS

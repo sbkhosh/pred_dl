@@ -1,14 +1,11 @@
 #!/usr/bin/python3
 
 import datetime
-import numpy as np
 import os
 import pandas as pd
-import time
 import yaml
 
 from dt_help import Helper
-from pandas.tseries.offsets import BDay
 from yahoofinancials import YahooFinancials
 
 class DataProcessor():

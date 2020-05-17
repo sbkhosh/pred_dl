@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
 from dt_help import Helper
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.models import Sequential
-from keras.layers import Bidirectional, Dense, Dropout, LSTM
+from keras.layers import Dense, Dropout, LSTM
 
 from numpy.random import seed
 seed(1)
@@ -49,7 +48,7 @@ class DeepModelTS():
             return(optimizers.Adam(lr=params["lr"]))
         elif(flag==''):
             return('adam')
-
+            
     @staticmethod
     def create_X_Y(ts: list, lag: int) -> tuple:
         X, Y = [], []
@@ -62,11 +61,12 @@ class DeepModelTS():
                 X.append(ts[i:(i + lag)])
 
         X, Y = np.array(X), np.array(Y)
+        print(X.shape)
         # Reshaping the X array to an LSTM input shape 
         X = np.reshape(X, (X.shape[0], X.shape[1], 1))
 
         return(X, Y)
-
+        
     @Helper.timing
     def create_data_for_NN(
         self,

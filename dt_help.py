@@ -1,14 +1,12 @@
 #!/usr/bin/python3
 
 import csv
-import matplotlib
-import numpy as np
 import os
 import pandas as pd
 import time
 import yaml
 
-from datetime import date, timedelta
+from datetime import timedelta
 from functools import wraps
 
 class Helper():
