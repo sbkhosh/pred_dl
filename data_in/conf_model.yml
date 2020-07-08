@@ -1,0 +1,11 @@
+train_test_split: 0.2
+lag: 8
+n_ahead: 9
+LSTM_layer_depth: 64
+epochs: 100
+batch_size: 128
+yvar: 'GC=F'
+start_date: '2019-05-05'
+end_date: '2020-05-05'
+tickers_selected: ['GC=F']
+tickers_file: 'tickers.csv'
